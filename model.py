@@ -4,10 +4,12 @@ import time
 import math
 import re
 
+import pickle
+
 class Sentiment_Analysis():
     def __init__(self,alpha = 1.0):
         self.alpha = alpha
-        self.nlp = spacy.load("en_core_web_sm")
+        self.nlp = None
         self.Class_Probability = [0,0,0,0,0,0]
         self.Class = {
             "fear" : 0,
@@ -85,6 +87,21 @@ class Sentiment_Analysis():
                     Score[i] += math.log((self.Vocabulary[word])[i])
 
         return Score
+    
+
+
+    def load_nlp(self):
+        if self.nlp is None:
+            self.nlp = spacy.load("en_core_web_sm")
+
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        state['nlp'] = None  # Force nlp to None when pickling
+        return state
+
+    def __setstate__(self, state):
+        self.__dict__.update(state)
+        self.load_nlp()
             
                        
     def lemmatization(self,word):
